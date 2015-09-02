@@ -1,7 +1,8 @@
 'use strict';
 
 var modulePath = '../../lib/profiler',
-  proxyquire = require('proxyquire');
+  Measured = require('measured'),
+  proxyquire = require('proxyquire');  
 
 describe('profiler structure', function() {
   var profiler = require(modulePath),
@@ -43,55 +44,102 @@ describe('profiler structure', function() {
   });
 });
 
-describe('profiler runs successfully', function() {
-  var usageSpy = sinon.spy(),
-    lookupSpy = sinon.spy(),
-    profiler = proxyquire(modulePath, {
-    'usage': usageSpy
-    }),
+
+describe('profiler does not run successfully', function() {
+  var intermediate,
+    aggregate,
+    pendingRequests,
     pid = 34562,
-    intermediate = {},
-    aggregate = {},
-    pendingRequests = {},
     delta = 345,
     code = 200;
 
-  // usageStub.callsArgWithAsync
-  // var chkPropsOfVariable = sinon.spy();
+  var usageOptions = {keepHistory: true};
+  var error = 'Error Message';
 
-  // usageStub.returns({
-  //   lookup: lookupSpy
-  // });
+  beforeEach(function() {
+    pendingRequests = new Measured.Counter();
+    intermediate = createStat;
+    aggregate = createStat;
+    
+    var usageStub = {
+      lookup: function(pid, usageOptions, cb) {
+        cb(error, {'cpu': 12.3, 'memory': 456778});
+      }
+    };
 
-  it('calls usage.lookup', function() {
-    profiler(pid, intermediate, aggregate, pendingRequests, delta, code);
-    console.log(usageSpy)
-    expect(usageSpy).to.be.calledOnce
+    var Profiler = proxyquire(modulePath, {
+      'usage': usageStub
+    })
+    
+    new Profiler(pid, intermediate, aggregate, pendingRequests, delta, code);
   });
 
-  // it('updats cpu', function() {
-  //   profiler(pid, intermediate, aggregate, pendingRequests, delta, code);
+  it('updates aggregate', function() {
+    expect(aggregate._collection.cpu._min).to.not.equal(12.3);
+    expect(aggregate._collection.memory._min).to.not.equal(456778);
+    expect(aggregate._collection.latency._min).to.not.equal(345);
+    expect(aggregate._collection.codes).to.not.have.property('200');
+  });
 
-  //   lookupSpy.callsArgWith(1)
+});
 
-  //   expect(usageStub).to.be.called
-  // });
+describe('profiler runs successfully', function() {
+
+  var intermediate,
+    aggregate,
+    pendingRequests,
+    pid = 34562,
+    delta = 345,
+    code = 200;
+
+  var usageOptions = {keepHistory: true};
+
+  beforeEach(function() {
+    pendingRequests = new Measured.Counter();
+    intermediate = createStat;
+    aggregate = createStat;
+    
+    var usageStub = {
+      lookup: function(pid, usageOptions, cb) {
+        cb(null, {'cpu': 12.3, 'memory': 456778});
+      }
+    };
+
+    var Profiler = proxyquire(modulePath, {
+      'usage': usageStub
+    })
+    
+    new Profiler(pid, intermediate, aggregate, pendingRequests, delta, code);
+  });
 
   it('adds functions to intermediate object', function() {
-    profiler(pid, intermediate, aggregate, pendingRequests, delta, code);
-
     expect(intermediate.addCPU).to.be.an('function');
-
     expect(intermediate.addMemory).to.be.an('function');
   });
 
   it('adds functions to aggregate object', function() {
-    profiler(pid, intermediate, aggregate, pendingRequests, delta, code);
-
     expect(aggregate.addCPU).to.be.an('function');
-
     expect(aggregate.addMemory).to.be.an('function');
   });
 
+  it('calls pendingRequests', function() {
+    expect(pendingRequests).to.have.property('dec');
+  });
+
+  it('updates intermediate', function() {
+    expect(intermediate._collection.cpu._min).to.equal(12.3);
+    expect(intermediate._collection.memory._min).to.equal(456778);
+    expect(intermediate._collection.latency._min).to.equal(345);
+    expect(intermediate._collection.codes).to.have.property('200');
+  });
+
+  it('updates aggregate', function() {
+    expect(aggregate._collection.cpu._min).to.equal(12.3);
+    expect(aggregate._collection.memory._min).to.equal(456778);
+    expect(aggregate._collection.latency._min).to.equal(345);
+    expect(aggregate._collection.codes).to.have.property('200');
+  });
 
 });
+
+
