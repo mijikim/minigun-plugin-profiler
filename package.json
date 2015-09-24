@@ -1,19 +1,18 @@
 {
-  "name": "minigun-profiler",
+  "name": "minigun-plugin-profiler",
   "peerDependencies": {
     "minigun-core": "0.1.4"
   },
   "version": "0.0.1",
-  "description": "minigun-profiler - cpu and memory tracker for node.js apps used by `minigun-core`",
+  "description": "A plugin for minigun that will track CPU and Memory usage of application running on local machine",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --recursive --reporter spec --require ./test/helpers ./test/*",
-    "format": "find . -name '*.js' | grep -v node_modules | grep -v coverage | xargs jscs --preset=google",
     "lint": "find . -name '*.js' | grep -v node_modules | grep -v coverage | xargs eslint",
     "coverage": "./node_modules/.bin/istanbul cover _mocha -- --recursive ./test/* && ./node_modules/.bin/istanbul check-coverage"
   },
   "author": "Mi Ji Kim <miji.kim926@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "assert-plus": "^0.1.5",
     "measured": "^1.0.1",
@@ -23,7 +22,6 @@
     "chai": "^1.9.2",
     "eslint": "^0.24.0",
     "istanbul": "^0.3.17",
-    "jscs": "^2.1.0",
     "mocha": "^2.2.5",
     "proxyquire": "^1.7.1",
     "sinon": "^1.16.1",
