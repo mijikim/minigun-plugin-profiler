@@ -1,8 +1,5 @@
 {
   "name": "minigun-plugin-profiler",
-  "peerDependencies": {
-    "minigun-core": "0.1.4"
-  },
   "version": "0.0.1",
   "description": "A plugin for minigun that will track CPU and Memory usage of application running on local machine",
   "main": "index.js",
