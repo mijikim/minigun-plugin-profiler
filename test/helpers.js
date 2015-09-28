@@ -1,7 +1,7 @@
 'use strict';
 
 var localChai = require('chai'),
-  localSinon = require('sinon'),
+  localSinon = require('sinon');
 
 localChai.use(require('sinon-chai'));
 
