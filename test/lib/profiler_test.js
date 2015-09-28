@@ -10,11 +10,11 @@ describe('profiler structure', function() {
       plugins: {
         profiler: {pid: 34562}
       }
-    };
+    },
     ee = new EventEmitter();
 
   it('returns updateUsage function', function() {
-    expect(profiler.name).to.equal('updateUsage');
+    expect(Profiler.name).to.equal('updateUsage');
   });
 
   it('has report function', function() {
@@ -45,7 +45,7 @@ describe('profiler runs successfully', function() {
       plugins: {
         profiler: {pid: 34562}
       }
-    };
+    },
     ee = new EventEmitter();
     
   it('listens to EventEmitter', function() {
