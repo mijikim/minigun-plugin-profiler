@@ -1,6 +1,6 @@
 {
   "name": "minigun-plugin-profiler",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A plugin for minigun that will track CPU and Memory usage of application running on local machine",
   "main": "index.js",
   "scripts": {
